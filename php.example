@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Get the project name (assumed to be the same as the root folder name)
+# Get the name of the main service (specified in `docker-compose.yml`)
+path=$(printf '%s\n' "${PWD##*/}")
+service="laravel.app"
+# Construct the container name (as it's created by Docker Compose).
+container="${path}-${service}-1"
+
+# Save the coomand that runs `php` inside the main container.
+# throw a message and then run the command.
+command="docker exec ${container} php "$@""
+echo "Running php on docker container ${container}"
+$command
