@@ -17,20 +17,17 @@
 
 <body>
   <h1>Hello, world!</h1>
-  @foreach( $taskList as $task )
+  @foreach( $taskList as $id => $task )
     <div>
       <ul>
-        <li>id: {{ $task->id }}</li>
-        <li>name: {{ $task->name }}</li>
-        <li>position: {{ $task->position }}</li>
-        <li>state: {{ $task->state }}</li>
-        <li>checkListId: {{ $task->checkListId }}</li>
+        <li style="{!! $task->isComplete? 'text-decoration: line-through;' : '' !!}">name: {{ $task->name }}</li>
+        <!-- <li>checkItemId: {{ $id }}</li> -->
+        <!-- <li>position: {{ $task->position }}</li> -->
+        <!-- <li>checkListId: {{ $task->checkListId }}</li> -->
+        <!-- <li>state: {{ $task->isComplete? 'TRUE' : 'false' }}</li> -->
       </ul>
     </div>
   @endforeach
-
-  
-
 </body>
 
 </html>

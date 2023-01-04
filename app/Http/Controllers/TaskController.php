@@ -12,22 +12,7 @@ class TaskController extends Controller
    */
   public function home()
   {
-    $taskList = [
-      new Task([
-        "id" => 'test-id',
-        "name" => 'test-name',
-        "pos" => 1,
-        "idChecklist" => 'test-list-id',
-        "state" => 'test-state'
-      ]),
-      new Task([
-        "id" => 'test-id',
-        "name" => 'test-name',
-        "pos" => 1,
-        "idChecklist" => 'test-list-id',
-        "state" => 'test-state'
-      ]),
-    ];
+    $taskList = Task::getTaskList();
     return view('task.home', compact('taskList'));
   }
 }
