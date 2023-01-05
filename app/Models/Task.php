@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Http;
  */
 class Task extends Model
 {
-  /** @param array $fieldList ["id", "name", "pos", "idChecklist", "state"] */
+  /** 
+   * @param array $fieldList Fields as provided by trello API: "id", "name", "pos", "idChecklist", "state". 
+   * */
   function __construct($fieldList)
   {
     parent::__construct();
@@ -26,15 +28,25 @@ class Task extends Model
     $this->checkListId  = $fieldList['idChecklist'];
   }
 
+  /**
+   * Provides the contents of a particular Checklist in the form of a Collection of Tasks.
+   * TODO: For now this method has trello IDs that you need to know in advance and set them in the `.env` file, 
+   * this can be improved so that, ideally, you don't need to make manual API calls to check the desired IDs.
+   *  
+   * @return Task[]|Collection
+   */
   public static function getTaskList()
   {
     $checklistsOnCardData = Task::getChecklistsOnCard(env('TRELLO_TARGET_CARD_ID'), ['checkItem_fields' => 'name,pos,state']);
-    $taskList = Task::extractItemsByChecklistId($checklistsOnCardData, env('TRELLO_TARGET_CHECKLIST'));
+    $taskList = Task::extractItemsByChecklistId($checklistsOnCardData, env('TRELLO_TARGET_CHECKLIST_ID'));
 
     return $taskList;
   }
 
   /**
+   * This method is just a helper to make the a particular trello API call.
+   * It returns the raw data of Checklists belonging to a particular Card.
+   * 
    * @param string $cardId
    * @param array $queryParameters
    * @return array
@@ -58,6 +70,9 @@ class Task extends Model
   }
 
   /**
+   * This method returns a Collection of sorted Tasks objects, based on the raw
+   * Checklists data ( as provided by trello API) and a target Checklist ID.
+   * 
    * @param array $checklistsOnCardData
    * @param string $checklistId
    * @return Task[]|Collection
@@ -76,8 +91,6 @@ class Task extends Model
       $taskList[$checkItemData['id']] = new Task($checkItemData);
     }
 
-    $taskList = $taskList->sortBy('position');
-
-    return $taskList;
+    return $taskList->sortBy('position');
   }
 }

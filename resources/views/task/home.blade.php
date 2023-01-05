@@ -20,7 +20,13 @@
   @foreach( $taskList as $id => $task )
     <div>
       <ul>
-        <li style="{!! $task->isComplete? 'text-decoration: line-through;' : '' !!}">name: {{ $task->name }}</li>
+        @if( $task->isComplete )
+          <li style="text-decoration: line-through;">
+        @else
+          <li>
+        @endif
+          name: {{ $task->name }}
+        </li>
         <!-- <li>checkItemId: {{ $id }}</li> -->
         <!-- <li>position: {{ $task->position }}</li> -->
         <!-- <li>checkListId: {{ $task->checkListId }}</li> -->
