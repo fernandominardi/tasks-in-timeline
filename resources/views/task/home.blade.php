@@ -27,10 +27,11 @@
         @endif
           name: {{ $task->name }}
         </li>
-        <!-- <li>checkItemId: {{ $id }}</li> -->
-        <!-- <li>position: {{ $task->position }}</li> -->
-        <!-- <li>checkListId: {{ $task->checkListId }}</li> -->
-        <!-- <li>state: {{ $task->isComplete? 'TRUE' : 'false' }}</li> -->
+        {{-- <li>checkItemId: {{ $id }}</li></li> --}}
+        {{-- <li>position: {{ $task->position }}</li></li> --}}
+        {{-- <li>checkListId: {{ $task->checkListId }}</li></li> --}}
+        {{-- <li>state: {{ $task->isComplete? 'TRUE' : 'false' }}</li></li> --}}
+        <li>days: {{ $task->remainingDaysEstimate }}</li>
       </ul>
     </div>
   @endforeach

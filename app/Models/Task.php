@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
  * @property float position
  * @property string isComplete
  * @property string checkListId
+ * @property float remainingDaysEstimate
  */
 class Task extends Model
 {
@@ -24,13 +25,25 @@ class Task extends Model
     $this->checkItemId  = $fieldList['id'];
     $this->name         = $fieldList['name'];
     $this->position     = $fieldList['pos'];
-    $this->isComplete   = $fieldList['state']=='complete';
+    $this->isComplete   = $fieldList['state'] == 'complete';
     $this->checkListId  = $fieldList['idChecklist'];
+
+    if ($this->isComplete) {
+      $this->remainingDaysEstimate = null;
+    } else {
+      // There is an accepted nomenclature on with the user can specify the remaining time of the task
+      // by writing the number of days (decimals permitted) inside curly brackets (between "{" and "}").
+      // So we search that number using regular expressions. 
+      // In case of not finding the number, 5 days is assumed by default.
+      preg_match_all('/\{(.*?)\}/', $this->name, $matchData);
+      $allMatches = $matchData[1];
+      $this->remainingDaysEstimate = !$allMatches ? 5.0 : (float) $allMatches[0];
+    }
   }
 
   /**
    * Provides the contents of a particular Checklist in the form of a Collection of Tasks.
-   * TODO: For now this method has trello IDs that you need to know in advance and set them in the `.env` file, 
+   * TODO: For now this method uses trello IDs that you need to know in advance and set them in the `.env` file, 
    * this can be improved so that, ideally, you don't need to make manual API calls to check the desired IDs.
    *  
    * @return Task[]|Collection
