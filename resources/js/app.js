@@ -1,2 +1,4 @@
 import '../scss/app.scss';
-window.TestThisShouldNotBeUndefined = 'It is definitely defined :P';
+import '../../node_modules/bootstrap/dist/js/bootstrap.bundle.min'
+
+// Future javascript code can go here.
