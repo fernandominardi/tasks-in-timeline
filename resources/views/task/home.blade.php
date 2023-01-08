@@ -4,15 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <title>{{ env("APP_NAME") }}</title>
-
-  <!-- Fonts -->
-  <!-- ===TODO=== -->
-
-  <!-- Styles -->
-  <!-- ===TODO=== -->
-
+  @vite('resources/js/app.js')
 </head>
 
 <body>
