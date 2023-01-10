@@ -9,40 +9,32 @@
 </head>
 
 <body>
-  <h1>Hello, world!</h1>
+  <div class="container">
+    <h1 class="text-center mt-3 mb-3">TASKS IN TIMELINE</h1>
 
-  <div>
-    <hr>
-    <button type="button" class="btn btn-primary">Primary</button>
-    <button type="button" class="btn btn-secondary">Secondary</button>
-    <button type="button" class="btn btn-success">Success</button>
-    <button type="button" class="btn btn-danger">Danger</button>
-    <button type="button" class="btn btn-warning">Warning</button>
-    <button type="button" class="btn btn-info">Info</button>
-    <button type="button" class="btn btn-light">Light</button>
-    <button type="button" class="btn btn-dark">Dark</button>
-    <button type="button" class="btn btn-link">Link</button>
-    <hr>
-  </div>
+    <div class="calendar">
 
-  @foreach( $taskList as $id => $task )
-    <div>
-      <ul>
-        @if( $task->isComplete )
-          <li style="text-decoration: line-through;">
-        @else
-          <li>
-        @endif
-          name: {{ $task->name }}
-        </li>
-        {{-- <li>checkItemId: {{ $id }}</li></li> --}}
-        {{-- <li>position: {{ $task->position }}</li></li> --}}
-        {{-- <li>checkListId: {{ $task->checkListId }}</li></li> --}}
-        {{-- <li>state: {{ $task->isComplete? 'TRUE' : 'false' }}</li></li> --}}
-        <li>days: {{ $task->remainingDaysEstimate }}</li>
-      </ul>
+      @foreach ([1,2,3,4,5,6,7,8,9,10] as $item)
+        <div class="calendar__row">
+
+          @foreach ([1,2,3,4,5,6,7] as $item)
+            <div class="calendar__cell">
+              <div class="calendar__day">{{ $item+5 }}</div>
+            </div>
+          @endforeach
+
+          <div class="calendar__row-inner-tasks">
+            <div class="task bg-primary"></div>
+            <div class="task bg-primary"></div>
+            <div class="task bg-primary"></div>
+          </div>
+
+        </div>
+      @endforeach
+
     </div>
-  @endforeach
+
+  </div>
 </body>
 
 </html>
