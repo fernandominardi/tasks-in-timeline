@@ -8,7 +8,7 @@
   @vite('resources/js/app.js')
 </head>
 
-<body>
+<body data-bs-theme="dark">
   <div class="container">
     <h1 class="text-center mt-3 mb-3">TASKS IN TIMELINE</h1>
 
@@ -24,9 +24,16 @@
           @endforeach
 
           <div class="calendar__row-inner-tasks">
-            <div class="task bg-primary"></div>
-            <div class="task bg-primary"></div>
-            <div class="task bg-primary"></div>
+            <div class="task bg-primary"
+              style="width: 25%"
+              data-bs-toggle="tooltip" 
+              data-bs-custom-class="custom-tooltip" 
+              data-bs-title="A very awesome task very awesome task very awesome task very awesome task.">
+              <span class="d-inline-block text-truncate">A very awesome task very awesome task very awesome task very awesome task.</span>
+            </div>
+            <div class="task bg-primary" style="width: 25%"></div>
+            <div class="task bg-primary" style="width: 25%"></div>
+            <div class="task bg-primary" style="width: 25%"></div>
           </div>
 
         </div>
