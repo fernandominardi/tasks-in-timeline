@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Http;
 
 /**
  * @property string id
- * @property string name
- * @property float position
+ * @property string name Task description single line text.
+ * @property float position Position as provided by Trello API, note that it can be float and that the sequence is not predictable.
  * @property string isComplete
  * @property string checkListId
- * @property float remainingDaysEstimate
+ * @property float remainingDaysEstimate Custom field.
  */
 class Task extends Model
 {
   /** 
-   * @param array $fieldList Fields as provided by trello API: "id", "name", "pos", "idChecklist", "state". 
+   * @param array $fieldList Fields as provided by Trello API: "id", "name", "pos", "idChecklist", "state". 
    * */
   function __construct($fieldList)
   {
@@ -31,13 +31,30 @@ class Task extends Model
     if ($this->isComplete) {
       $this->remainingDaysEstimate = null;
     } else {
-      // There is an accepted nomenclature on with the user can specify the remaining time of the task
-      // by writing the number of days (decimals permitted) inside curly brackets (between "{" and "}").
-      // So we search that number using regular expressions. 
-      // In case of not finding the number, 5 days is assumed by default.
+      // There is an accepted nomenclature on which the user can specify the remaining time of the task
+      // by writing inside curly brackets the number of days followed by the letter "d" or hours followed by 
+      // the letter "h" (decimals permitted in both cases). So we search that data using regular expressions. 
       preg_match_all('/\{(.*?)\}/', $this->name, $matchData);
       $allMatches = $matchData[1];
-      $this->remainingDaysEstimate = !$allMatches ? 5.0 : (float) $allMatches[0];
+
+      // We get the value, or set a default value in case none is found.
+      $timeData = !$allMatches ? env('TASK_DEFAULT_REMAINING_TIME') : $allMatches[0];
+
+      // Extract parts of the input and make some validations.
+      $numericPart = rtrim($timeData, 'dh');
+      $dayOrHourIndicator = substr($timeData, -1);
+
+      if (($dayOrHourIndicator != 'd' && $dayOrHourIndicator != 'h') || !is_numeric($numericPart)) {
+        abort(403, "Error: Invalid time remaining provided for task: \"{$this->name}\" ({$timeData}) -> {$numericPart}|{$dayOrHourIndicator}");
+        echo '<br>';
+      }
+
+      // We assign the days directly or made a conversion from hours if needed.
+      if ($dayOrHourIndicator == 'd') {
+        $this->remainingDaysEstimate = (float) $numericPart;
+      } elseif ($dayOrHourIndicator == 'h') {
+        $this->remainingDaysEstimate = round($numericPart / env('TASK_EFFECTIVE_HRS_IN_DAY'), 2);
+      }
     }
   }
 
