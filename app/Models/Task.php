@@ -63,12 +63,13 @@ class Task extends Model
    * TODO: For now this method uses trello IDs that you need to know in advance and set them in the `.env` file, 
    * this can be improved so that, ideally, you don't need to make manual API calls to check the desired IDs.
    *  
+   * @param bool $excludeCompleted
    * @return Task[]|Collection
    */
-  public static function getTaskList()
+  public static function getTaskList($excludeCompleted=false)
   {
     $checklistsOnCardData = Task::getChecklistsOnCard(env('TRELLO_TARGET_CARD_ID'), ['checkItem_fields' => 'name,pos,state']);
-    $taskList = Task::extractItemsByChecklistId($checklistsOnCardData, env('TRELLO_TARGET_CHECKLIST_ID'));
+    $taskList = Task::extractItemsByChecklistId($checklistsOnCardData, env('TRELLO_TARGET_CHECKLIST_ID'),$excludeCompleted);
 
     return $taskList;
   }
@@ -105,9 +106,10 @@ class Task extends Model
    * 
    * @param array $checklistsOnCardData
    * @param string $checklistId
+   * @param bool $excludeCompleted
    * @return Task[]|Collection
    */
-  private static function extractItemsByChecklistId($checklistsOnCardData, $checklistId)
+  private static function extractItemsByChecklistId($checklistsOnCardData, $checklistId, $excludeCompleted=false)
   {
     $targetChecklistData = [];
     foreach ($checklistsOnCardData as $checklistData) {
@@ -118,7 +120,9 @@ class Task extends Model
 
     $taskList = new Collection();
     foreach ($targetChecklistData as $checkItemData) {
-      $taskList[$checkItemData['id']] = new Task($checkItemData);
+      if(!$excludeCompleted || $checkItemData['state'] != 'complete'){
+        $taskList[$checkItemData['id']] = new Task($checkItemData);
+      }
     }
 
     return $taskList->sortBy('position');

@@ -12,7 +12,7 @@ class TaskController extends Controller
    */
   public function home()
   {
-    $taskList = Task::getTaskList();
+    $taskList = Task::getTaskList(true);
     return view('task.home', compact('taskList'));
   }
 }
