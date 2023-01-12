@@ -10,10 +10,9 @@
 
 <body data-bs-theme="dark">
   <div class="container">
-    <?php dd($calendarData); ?>
     <h1 class="text-center mt-3 mb-3">TASKS IN TIMELINE</h1>
 
-    <div class="calendar">
+    <div class="calendar mb-4">
 
       @foreach ([1,2,3,4,5,6,7,8,9,10] as $item)
         <div class="calendar__row">
