@@ -45,18 +45,19 @@ class Calendar extends Model
       $remainingDaysCount = $remainingDaysTotal,
       $weekData = [];
       // Loop structure "while" condition
-    !($remainingDaysCount <= 0 && $date->isDayOfWeek(Carbon::MONDAY));
+      !($remainingDaysCount <= 0 && $date->isDayOfWeek(Carbon::MONDAY));
       // Next loop initialization
       $date->addDays(1),
       $firstIteration = false
     ) {
       // We create and populate the basic day data.
       $dayData = [
-        "dayNumber"     => $date->day,
-        "monthName"     => $date->monthName,
-        "isPlaceholder" => false,
-        "isCurrentDay"  => $date->isCurrentDay(),
-        "showMonth"     => false,
+        "dayNumber"       => $date->day,
+        "monthName"       => $date->monthName,
+        "isPlaceholder"   => false,
+        "isNonWorkingDay" => false,
+        "isCurrentDay"    => $date->isCurrentDay(),
+        "showMonth"       => false,
         "remainingDaysCount" => $remainingDaysCount,
       ];
 
@@ -66,13 +67,17 @@ class Calendar extends Model
       }
 
       // Days after all tasks are finished are consider placeholders too
-      if($remainingDaysCount <= 0){
+      if ($remainingDaysCount <= 0) {
         $dayData["isPlaceholder"] = true;
+      }
+      // Non-working day case
+      if ($date->isDayOfWeek(Carbon::SUNDAY)) {
+        $dayData["isNonWorkingDay"] = true;
       }
 
       // If have reach the current day we can star subtracting de remaining days
       // Otherwise we mark the day as a placeholder. 
-      if ($currentDayFound) {
+      if ($currentDayFound && !$dayData["isNonWorkingDay"]) {
         $remainingDaysCount -= 1;
       } else {
         $dayData["isPlaceholder"] = true;

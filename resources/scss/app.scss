@@ -35,16 +35,22 @@
     align-items: flex-start;
     flex-direction: row;
     gap: 2px;
+  }
 
-    .task{
-      border-radius: bs.$border-radius-sm;
-      height: 100%;
-      opacity: 1;
-      color: #fff;
-      padding: 0 0.375rem;
-      // Centering inner text
-      display:flex;
-      align-items:center;
+  &__row-task {
+    @extend .bg-primary;
+    border-radius: bs.$border-radius-sm;
+    height: 100%;
+    opacity: 1;
+    color: #fff;
+    padding: 0 0.375rem;
+    // Centering inner text
+    display:flex;
+    align-items:center;
+
+    &--hidden {
+      opacity: 0;
+      pointer-events: none;
     }
   }
 
@@ -55,6 +61,16 @@
     border: 1px solid var(--bs-body-color);
     margin-left: -1px;
     margin-top: -1px;
+
+    &--placeholder{
+      background-color: bs.$gray-700;
+    }
+
+    &--header{
+      height: initial;
+      min-height: initial;
+      text-align: center;
+    }
   }
 
   &__day {

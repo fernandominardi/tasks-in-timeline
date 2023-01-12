@@ -14,26 +14,42 @@
 
     <div class="calendar mb-4">
 
-      @foreach ([1,2,3,4,5,6,7,8,9,10] as $item)
+      <div class="calendar__row">
+        <div class="calendar__cell calendar__cell--header">Monday</div>
+        <div class="calendar__cell calendar__cell--header">Tuesday</div>
+        <div class="calendar__cell calendar__cell--header">Wednesday</div>
+        <div class="calendar__cell calendar__cell--header">Thursday</div>
+        <div class="calendar__cell calendar__cell--header">Friday</div>
+        <div class="calendar__cell calendar__cell--header">Saturday</div>
+        <div class="calendar__cell calendar__cell--header">Sunday</div>
+      </div>
+
+      @foreach ($calendarData as $weekData)
         <div class="calendar__row">
 
-          @foreach ([1,2,3,4,5,6,7] as $item)
-            <div class="calendar__cell">
-              <div class="calendar__day">{{ $item+5 }}</div>
+          @foreach ($weekData as $dayData)
+            <div class="calendar__cell {!! $dayData['isPlaceholder']? 'calendar__cell--placeholder' : '' !!}">
+              <div class="calendar__day">{{ $dayData['showMonth']? $dayData['monthName'] : '' }} {{ $dayData['dayNumber'] }}</div>
+              {{-- {{ $dayData["isNonWorkingDay"]? 'TRUE' : '' }} --}}
             </div>
           @endforeach
 
           <div class="calendar__row-inner-tasks">
-            <div class="task bg-primary"
+            <div class="calendar__row-task calendar__row-task--hidden"
               style="width: 25%"
               data-bs-toggle="tooltip" 
               data-bs-custom-class="custom-tooltip" 
               data-bs-title="A very awesome task very awesome task very awesome task very awesome task.">
               <span class="d-inline-block text-truncate">A very awesome task very awesome task very awesome task very awesome task.</span>
             </div>
-            <div class="task bg-primary" style="width: 25%"></div>
-            <div class="task bg-primary" style="width: 25%"></div>
-            <div class="task bg-primary" style="width: 25%"></div>
+
+            <div class="calendar__row-task"
+              style="width: 25%"
+              data-bs-toggle="tooltip" 
+              data-bs-custom-class="custom-tooltip" 
+              data-bs-title="A very awesome task very awesome task very awesome task very awesome task.">
+              <span class="d-inline-block text-truncate">A very awesome task very awesome task very awesome task very awesome task.</span>
+            </div>
           </div>
 
         </div>
