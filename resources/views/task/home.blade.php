@@ -10,27 +10,7 @@
 
 <body data-bs-theme="dark">
   <div class="container">
-    <br>
-    @foreach( $taskList as $id => $task )
-    <div>
-      <ul>
-        @if( $task->isComplete )
-          <li style="text-decoration: line-through;">
-        @else
-          <li>
-        @endif
-          name: {{ $task->name }}
-        </li>
-        <li> >> @php var_dump($task->remainingDaysEstimate) @endphp </li>
-
-        {{-- <li>checkItemId: {{ $id }}</li> --}}
-        {{-- <li>position: {{ $task->position }}</li> --}}
-        {{-- <li>checkListId: {{ $task->checkListId }}</li> --}}
-        {{-- <li>state: {{ $task->isComplete? 'TRUE' : 'false' }}</li> --}}
-      </ul>
-    </div>
-  @endforeach
-
+    <?php dd($calendarData); ?>
     <h1 class="text-center mt-3 mb-3">TASKS IN TIMELINE</h1>
 
     <div class="calendar">
