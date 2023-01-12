@@ -13,18 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 class Calendar extends Model
 {
 
-  function __construct()
-  {
-    /*$this->weekList;
-    $this->currentWeekDay;
-    $this->totalNumberOfDaysRemaining;
-    $this->taskList;*/
-
-    //$this->calendarData = [];
-
-    //$this->taskList = Task::getTaskList(true);
-  }
-
   /**
    * @param Task[] $taskList
    * @return array
@@ -57,36 +45,52 @@ class Calendar extends Model
       $remainingDaysCount = $remainingDaysTotal,
       $weekData = [];
       // Loop structure "while" condition
-      $remainingDaysCount > 0;
+    !($remainingDaysCount <= 0 && $date->isDayOfWeek(Carbon::MONDAY));
       // Next loop initialization
       $date->addDays(1),
       $firstIteration = false
     ) {
+      // We create and populate the basic day data.
       $dayData = [
-        "number"            => $date->day,
-        "month-label"       => $date->monthName,
-        "is-placeholder"    => false,
-        "is-current-day"    => $date->isCurrentDay(),
-        "show-month"        => false,
+        "dayNumber"     => $date->day,
+        "monthName"     => $date->monthName,
+        "isPlaceholder" => false,
+        "isCurrentDay"  => $date->isCurrentDay(),
+        "showMonth"     => false,
+        "remainingDaysCount" => $remainingDaysCount,
       ];
 
-      if ($dayData["is-current-day"]) {
+      // Check whether we have already reach the current day.
+      if ($dayData["isCurrentDay"]) {
         $currentDayFound = true;
       }
 
+      // Days after all tasks are finished are consider placeholders too
+      if($remainingDaysCount <= 0){
+        $dayData["isPlaceholder"] = true;
+      }
+
+      // If have reach the current day we can star subtracting de remaining days
+      // Otherwise we mark the day as a placeholder. 
       if ($currentDayFound) {
         $remainingDaysCount -= 1;
       } else {
-        $dayData["is-placeholder"] = true;
+        $dayData["isPlaceholder"] = true;
       }
 
-      if ($dayData["is-current-day"] || $dayData["number"] == 1) {
-        $dayData["show-month"] = true;
+      // We set to show the month's name if:
+      // - it is the first day of the month
+      // - it is the current day (i.e, first productive day)
+      if ($dayData["isCurrentDay"] || $dayData["dayNumber"] == 1) {
+        $dayData["showMonth"] = true;
       }
 
+      // After the $dayData es complete, we add it to the $weekData list
       $weekData[$date->dayOfWeekIso] = $dayData;
 
-      if ($date->isDayOfWeek(Carbon::SUNDAY) || $remainingDaysCount <= 0) {
+      // If it's the last day of the week, we add the completed week to the week list,
+      // and initialize the next one.
+      if ($date->isDayOfWeek(Carbon::SUNDAY) /*|| $remainingDaysCount <= 0*/) {
         $weekListData[] = $weekData;
         $weekData = [];
       }
@@ -106,23 +110,21 @@ class Calendar extends Model
   }
 
   /**
-   * @return array List of weeks data. Structure:
+   * @return array List of weeks data. Basic structure:
    *   [
    *    "week-01" => [
    *      "days": [
    *        [
-   *          "number": <int: Number in the month>,
-   *          "month-label": <string: Name of the month>,
-   *          "is-placeholder": <bool>,
-   *          "is-current-day": <bool>,
-   *          "is-first-of-month": <bool>,
+   *          "dayNumber": <int: Number in the month>,
+   *          ...
    *        ],
    *        ...
    *      ],
    *      "tasks" : [
    *        [
    *          "text": <string>,
-   *          "week-portion": <float: 0.0-100.0>,
+   *          "weekPortion": <float: 0.0-100.0>,
+   *          ...
    *        ],
    *        ...
    *      ],
