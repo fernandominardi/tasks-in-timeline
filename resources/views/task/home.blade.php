@@ -9,8 +9,8 @@
 </head>
 
 <body data-bs-theme="dark">
-  <div class="container"><?php dd($calendarData); ?>
-    <h1 class="text-center mt-3 mb-3">TASKS IN TIMELINE</h1>
+  <div class="container">
+    <h1 class="text-center mt-4 mb-4">TASKS IN TIMELINE</h1>
 
     <div class="calendar mb-4">
 
@@ -30,26 +30,22 @@
           @foreach ($weekData["weekDays"] as $dayData)
             <div class="calendar__cell {!! $dayData['isPlaceholder']? 'calendar__cell--placeholder' : '' !!}">
               <div class="calendar__day">{{ $dayData['showMonth']? $dayData['monthName'] : '' }} {{ $dayData['dayNumber'] }}</div>
-              {{-- {{ $dayData["isNonWorkingDay"]? 'TRUE' : '' }} --}}
+              {{-- {{ debug stuff }} --}}
             </div>
           @endforeach
-
-          <div class="calendar__row-inner-tasks">
-            <div class="calendar__row-task calendar__row-task--hidden"
-              style="width: 25%"
-              data-bs-toggle="tooltip" 
-              data-bs-custom-class="custom-tooltip" 
-              data-bs-title="A very awesome task very awesome task very awesome task very awesome task.">
-              <span class="d-inline-block text-truncate">A very awesome task very awesome task very awesome task very awesome task.</span>
-            </div>
-
-            <div class="calendar__row-task"
-              style="width: 25%"
-              data-bs-toggle="tooltip" 
-              data-bs-custom-class="custom-tooltip" 
-              data-bs-title="A very awesome task very awesome task very awesome task very awesome task.">
-              <span class="d-inline-block text-truncate">A very awesome task very awesome task very awesome task very awesome task.</span>
-            </div>
+          
+          <div class="calendar__row-tasks-container">
+            @foreach ($weekData["tasksData"] as $task)
+              <div class="calendar__row-task {!! $task['isPlaceholder']? 'calendar__row-task--hidden' : '' !!}"
+                style="width: {!! $task['weekPortion'] !!}%">
+                <div class="calendar__row-task-inner"
+                  data-bs-toggle="tooltip" 
+                  data-bs-custom-class="custom-tooltip" 
+                  data-bs-title="{{ $task['text'] }}">
+                  <span class="d-inline-block text-truncate">{{ $task['text'] }}</span>
+                </div>
+              </div>
+            @endforeach
           </div>
 
         </div>

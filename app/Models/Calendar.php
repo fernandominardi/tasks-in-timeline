@@ -145,7 +145,7 @@ class Calendar extends Model
           if (!$taskIterator->valid()) {
             break;
           }
-          
+
           // We get the next task and initialize a variable with
           // the length of the task in "calendar percentage" units. 
           /** @var Task $task */
@@ -163,7 +163,7 @@ class Calendar extends Model
         $calendarData[$weekIndex]["tasksData"][] = [
           "text" => $task->name,
           "days" => $task->daysEstimate,
-          "weekPortion" => $maxPortionToFill,
+          "weekPortion" => round($maxPortionToFill, 2),
           "isPlaceholder" => false,
         ];
 
