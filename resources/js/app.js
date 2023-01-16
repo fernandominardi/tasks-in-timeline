@@ -1,5 +1,5 @@
 import '../scss/app.scss';
-import '../../node_modules/bootstrap/dist/js/bootstrap.bundle.min'
+import * as bootstrap from 'bootstrap'
 
 // Tooltip plugin initialization.
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
