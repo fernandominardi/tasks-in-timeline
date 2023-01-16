@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Http;
  * @property float  $position Position as provided by Trello API, note that it can be float and that the sequence is not predictable.
  * @property string $isComplete
  * @property string $checkListId
- * @property float  $remainingDaysEstimate Custom field.
- * @property float  $remainingDaysInWeekPercentage Custom field.
+ * @property float  $daysEstimate Custom field.
+ * @property float  $daysInWeekPercentage Custom field.
  */
 class Task extends Model
 {
@@ -28,8 +28,9 @@ class Task extends Model
     $this->position     = $fieldList['pos'];
     $this->isComplete   = $fieldList['state'] == 'complete';
     $this->checkListId  = $fieldList['idChecklist'];
-    $this->remainingDaysEstimate = null;
-    $this->remainingDaysInWeekPercentage = null;
+    $this->daysEstimate = null;
+    $this->daysInWeekPercentage = null;
+    $this->weekPercentageCount = null;
 
     if ($this->isComplete) {
       return;
@@ -55,14 +56,14 @@ class Task extends Model
 
     // We assign the days directly or made a conversion from hours if needed.
     if ($dayOrHourIndicator == 'd') {
-      $this->remainingDaysEstimate = (float) $numericPart;
+      $this->daysEstimate = (float) $numericPart;
     } elseif ($dayOrHourIndicator == 'h') {
-      $this->remainingDaysEstimate = round($numericPart / env('TASK_EFFECTIVE_HRS_IN_DAY'), 2);
+      $this->daysEstimate = round($numericPart / env('TASK_EFFECTIVE_HRS_IN_DAY'), 2);
     }
 
     // We calculate the duration in terms of week proportion (percentage).
-    $this->remainingDaysInWeekPercentage = $this->remainingDaysEstimate * (100 / 7);
-    $this->remainingDaysInWeekPercentage = floor($this->remainingDaysInWeekPercentage * 100) / 100;
+    $this->daysInWeekPercentage = precision_floor($this->daysEstimate * (100 / 7), 2);
+    $this->weekPercentageCount = $this->weekPercentageCount;
   }
 
   /**

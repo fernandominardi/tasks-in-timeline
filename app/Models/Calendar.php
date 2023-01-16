@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ArrayObject;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,11 +24,11 @@ class Calendar extends Model
     $weekListData = [];
 
     // We use de list of tasks to deduce how much in the future we need to go.
-    $remainingDaysTotal = 0.0;
+    $daysTotal = 0.0;
     foreach ($taskList as $id => $task) {
-      $remainingDaysTotal += $task->remainingDaysEstimate;
+      $daysTotal += $task->daysEstimate;
     }
-    $remainingDaysTotal;
+    $daysTotal;
 
     // We need to start from the first day of the week.
     // In this case we consider that day to be Monday.
@@ -42,8 +43,8 @@ class Calendar extends Model
     for (
       // Loop structure initialization
       $date = $initDate->copy(),
-      $remainingDaysCount = $remainingDaysTotal,
-      $weekData = [];
+      $remainingDaysCount = $daysTotal,
+      $weekData = ["weekDays" => []];
       // Loop structure "while" condition
       !($remainingDaysCount <= 0 && $date->isDayOfWeek(Carbon::MONDAY));
       // Next loop initialization
@@ -91,13 +92,13 @@ class Calendar extends Model
       }
 
       // After the $dayData es complete, we add it to the $weekData list
-      $weekData[$date->dayOfWeekIso] = $dayData;
+      $weekData["weekDays"][$date->dayOfWeekIso] = $dayData;
 
       // If it's the last day of the week, we add the completed week to the week list,
       // and initialize the next one.
       if ($date->isDayOfWeek(Carbon::SUNDAY) /*|| $remainingDaysCount <= 0*/) {
         $weekListData[] = $weekData;
-        $weekData = [];
+        $weekData = ["weekDays" => []];
       }
     }
 
@@ -106,26 +107,85 @@ class Calendar extends Model
   }
 
   /**
+   * It takes the $calendarData and populate with the task information needed in frontend. 
+   * 
    * @param array   $calendarData Pass by reference calendar data.
-   * @param Task[]  $taskList
+   * @param Task[]|Collection  $taskList
    */
   static public function populateWithTasks(&$calendarData, $taskList)
   {
-    // TODO
+    // The goal is to add information about how tasks should be stacked on each week of the calendar.
+    // The main loop iterates through calendar weeks. For the tasks however we use and iterator in 
+    // order to traverse the task list in a conditional way while inside the main loop.
+    $taskIterator = (new ArrayObject($taskList->all()))->getIterator();
+    // This variable determines how much of the current task is left to add into the weeks.
+    // We initialize as zero in order to for the extraction of the next (aka first) task.
+    $taskRemainingPercentage = 0;
+
+    // Main loop: weeks inside the calendar data array.
+    foreach ($calendarData as $weekIndex => $weekData) {
+
+      // Initialization of the task data property.
+      $calendarData[$weekIndex]["tasksData"] = [];
+      // This variable determines how much of the week is available to use.
+      $weekRemainingPercentage = round((100 / 7) * env('TASK_WORKING_DAYS_ON_WEEK'), 2);
+
+      // Task loop. We add tasks until there is not space in the week.
+      // If a task is added just partiality in a particular week,
+      // that same task is going to be used in the next week look.
+      while ($weekRemainingPercentage > 1) {
+        // Note: The while condition could be `> 0`, but we use `> 1` 
+        // in case there is a small remainder due to float operations.
+
+        if ($taskRemainingPercentage <= 1) {
+          // Note: The if condition could be `<= 0`, but we use `<= 1` 
+          // in case there is a small remainder due to float operations.
+
+          // This is a safety in case the task list is used completely.
+          if (!$taskIterator->valid()) {
+            break;
+          }
+          
+          // We get the next task and initialize a variable with
+          // the length of the task in "calendar percentage" units. 
+          /** @var Task $task */
+          $task = $taskIterator->current();
+          $taskRemainingPercentage = $task->daysInWeekPercentage;
+          $taskIterator->next();
+        }
+
+        // We "fill" the current week subtracting all the task length
+        // OR want is left in the week space, whatever is smaller.
+        // (That is because we should not use more that is available in the week)
+        $maxPortionToFill = min($taskRemainingPercentage, $weekRemainingPercentage);
+
+        // Adding the task to the week.
+        $calendarData[$weekIndex]["tasksData"][] = [
+          "text" => $task->name,
+          "days" => $task->daysEstimate,
+          "weekPortion" => $maxPortionToFill,
+          "isPlaceholder" => false,
+        ];
+
+        // Subtracting what has been added.
+        $weekRemainingPercentage -= $maxPortionToFill;
+        $taskRemainingPercentage -= $maxPortionToFill;
+      }
+    }
   }
 
   /**
    * @return array List of weeks data. Basic structure:
    *   [
    *    "week-01" => [
-   *      "days": [
+   *      "weekDays": [
    *        [
    *          "dayNumber": <int: Number in the month>,
    *          ...
    *        ],
    *        ...
    *      ],
-   *      "tasks" : [
+   *      "weekTasks" : [
    *        [
    *          "text": <string>,
    *          "weekPortion": <float: 0.0-100.0>,

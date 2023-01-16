@@ -9,7 +9,7 @@
 </head>
 
 <body data-bs-theme="dark">
-  <div class="container">
+  <div class="container"><?php dd($calendarData); ?>
     <h1 class="text-center mt-3 mb-3">TASKS IN TIMELINE</h1>
 
     <div class="calendar mb-4">
@@ -27,7 +27,7 @@
       @foreach ($calendarData as $weekData)
         <div class="calendar__row">
 
-          @foreach ($weekData as $dayData)
+          @foreach ($weekData["weekDays"] as $dayData)
             <div class="calendar__cell {!! $dayData['isPlaceholder']? 'calendar__cell--placeholder' : '' !!}">
               <div class="calendar__day">{{ $dayData['showMonth']? $dayData['monthName'] : '' }} {{ $dayData['dayNumber'] }}</div>
               {{-- {{ $dayData["isNonWorkingDay"]? 'TRUE' : '' }} --}}
