@@ -122,6 +122,7 @@ class Calendar extends Model
     // We initialize as zero in order to for the extraction of the next (aka first) task.
     $taskRemainingPercentage = 0;
 
+    $firstWeek = true;
     // Main loop: weeks inside the calendar data array.
     foreach ($calendarData as $weekIndex => $weekData) {
 
@@ -129,6 +130,26 @@ class Calendar extends Model
       $calendarData[$weekIndex]["tasksData"] = [];
       // This variable determines how much of the week is available to use.
       $weekRemainingPercentage = round((100 / 7) * env('TASK_WORKING_DAYS_ON_WEEK'), 2);
+
+      if ($firstWeek) {
+        // Before adding actual tasks, we need to add some padding tasks
+        // to fill the days in the week previous to de current day.
+        $dayPortion = round(100 / 7, 2);
+        foreach ($calendarData[$weekIndex]['weekDays'] as $dayData) {
+          if ($dayData['isCurrentDay']) {
+            break;
+          }
+          $calendarData[$weekIndex]["tasksData"][] = [
+            "text" => '',
+            "days" => null,
+            "weekPortion" => $dayPortion,
+            "isPlaceholder" => true,
+          ];
+          $weekRemainingPercentage -= $dayPortion;
+        }
+
+        $firstWeek = false;
+      }
 
       // Task loop. We add tasks until there is not space in the week.
       // If a task is added just partiality in a particular week,

@@ -36,15 +36,22 @@
           
           <div class="calendar__row-tasks-container">
             @foreach ($weekData["tasksData"] as $task)
-              <div class="calendar__row-task {!! $task['isPlaceholder']? 'calendar__row-task--hidden' : '' !!}"
+              @if( $task['isPlaceholder'] )
+              <div class="calendar__row-task calendar__row-task--hidden"
                 style="width: {!! $task['weekPortion'] !!}%">
-                <div class="calendar__row-task-inner"
-                  data-bs-toggle="tooltip" 
-                  data-bs-custom-class="custom-tooltip" 
-                  data-bs-title="{{ $task['text'] }}">
-                  <span class="d-inline-block text-truncate">{{ $task['text'] }}</span>
-                </div>
               </div>
+              @else
+                <div class="calendar__row-task"
+                  style="width: {!! $task['weekPortion'] !!}%">
+                  <div class="calendar__row-task-inner"
+                    data-bs-toggle="tooltip" 
+                    data-bs-custom-class="custom-tooltip" 
+                    data-bs-title="{{ $task['text'] }}">
+                    <span class="d-inline-block text-truncate">{{ $task['text'] }}</span>
+                  </div>
+                </div>
+              @endif
+              
             @endforeach
           </div>
 
