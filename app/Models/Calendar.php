@@ -71,12 +71,20 @@ class Calendar extends Model
       if ($remainingDaysCount <= 0) {
         $dayData["isPlaceholder"] = true;
       }
-      // Non-working day case
-      if ($date->isDayOfWeek(Carbon::SUNDAY)) {
-        $dayData["isNonWorkingDay"] = true;
+      // Non-working days case
+      // TODO: This can be improved by making it more general, instead of hardcoded.
+      if( env('TASK_WORKING_DAYS_ON_WEEK') == 6 ){
+        if ($date->isDayOfWeek(Carbon::SUNDAY)) {
+          $dayData["isNonWorkingDay"] = true;
+        }
+      }elseif( env('TASK_WORKING_DAYS_ON_WEEK') == 5 ){
+        if ($date->isDayOfWeek(Carbon::SUNDAY) || $date->isDayOfWeek(Carbon::SATURDAY) ) {
+          $dayData["isNonWorkingDay"] = true;
+        }
       }
+      
 
-      // If have reach the current day we can star subtracting de remaining days
+      // If we have reached the current day we can start subtracting de remaining days
       // Otherwise we mark the day as a placeholder. 
       if ($currentDayFound && !$dayData["isNonWorkingDay"]) {
         $remainingDaysCount -= 1;
