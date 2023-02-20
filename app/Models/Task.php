@@ -79,6 +79,18 @@ class Task extends Model
     $checklistsOnCardData = Task::getChecklistsOnCard(env('TRELLO_TARGET_CARD_ID'), ['checkItem_fields' => 'name,pos,state']);
     $taskList = Task::extractItemsByChecklistId($checklistsOnCardData, env('TRELLO_TARGET_CHECKLIST_ID'), $excludeCompleted);
 
+    // Deleting all tasks at and after the "-- end of list --" was found.
+    // TODO: This process can be optimized.
+    $endListMarkerFound = false;
+    foreach( $taskList as $key => $task ){
+      if( !$endListMarkerFound && $task->name == "-- end of list --" ){
+        $endListMarkerFound = true;
+      }
+      if( $endListMarkerFound ){
+        unset($taskList[$key]);
+      }
+    }
+
     return $taskList;
   }
 
