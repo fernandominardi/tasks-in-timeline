@@ -41,6 +41,10 @@ h1 {
     text-align: right;
     padding: 0 0.4rem;
     text-transform: uppercase;
+
+    &--first-day{
+      background-color: #146c43;
+    }
   }
 
   &__row {

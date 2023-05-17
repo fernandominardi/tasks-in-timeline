@@ -29,7 +29,7 @@
 
           @foreach ($weekData["weekDays"] as $dayData)
             <div class="calendar__cell {!! $dayData['isPlaceholder']? 'calendar__cell--placeholder' : '' !!}">
-              <div class="calendar__day">{{ $dayData['showMonth']? $dayData['monthName'] : '' }} {{ $dayData['dayNumber'] }}</div>
+              <div class="calendar__day {!! $dayData['showMonth'] && $dayData['dayNumber'] == 1? 'calendar__day--first-day' : '' !!}">{{ $dayData['showMonth']? $dayData['monthName'] : '' }} {{ $dayData['dayNumber'] }}</div>
               {{-- {{ debug stuff }} --}}
             </div>
           @endforeach
